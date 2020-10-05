@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Bank
 {
-    class Admin : User
+    class Admin : MainAdminActions
     {
-        public static string newUserName;
-        public static string password;
-        public void AdminsMenu()
+
+        private string adminUserName;
+
+        private string adminPassword;
+
+        protected void AdminsMenu()
         {
             Console.WriteLine("Select any feature down below");
 
@@ -23,12 +25,13 @@ namespace Bank
             Console.WriteLine("5. sign out of system");
         }
 
-        public Dictionary<string, string> adminsData = new Dictionary<string, string>
+        protected Dictionary<string, string> adminsData = new Dictionary<string, string>
         {
-            {"userName", "a" },
-            {"password", "a" }
+            {"userName", "admin" },
+            {"password", "admin" }
         };
-        public Dictionary<string, string> adminsActions = new Dictionary<string, string>
+
+        protected Dictionary<string, string> adminsActions = new Dictionary<string, string>
         {
             {"1", "to look at the list of users" },
             {"2", "to add a new user" },
@@ -37,173 +40,147 @@ namespace Bank
             {"5", "to sign out of system" }
         };
 
+
+
+        PasswordAndUserNameChecker passwordAndUserNameChecker;
+
+        MainAdminActions mainAdminActions = new MainAdminActions();
+        
+        UserActions userActions;
+
         public void AdminAccount()
         {
-            AdminLogIn();
+            userActions = new UserActions();
+
+            this.AdminLogIn();
+
             agree = true;
+
             while (agree)
             {
-                AdminsMenu();
-                AdminChooseAction();
-                agree = ChooseAction();
+                this.AdminsMenu();
+
+                this.AdminChooseAction();
+
+                agree =  userActions.ChooseAction();
             }
 
         }
 
-        public void AdminLogIn()
+        protected void AdminLogIn()
         {
+            passwordAndUserNameChecker = new PasswordAndUserNameChecker();
+
             try
             {
                 Console.WriteLine("Enter your Admin's userName: ");
-                if (Console.ReadLine() == adminsData["userName"])
-                    Console.WriteLine("proceeded! ");
-                Console.WriteLine("Enter your Amin's password: ");
-                if (Console.ReadLine() == adminsData["password"])
-                    Console.WriteLine("Proceeded! ");
+
+                adminUserName = Convert.ToString(Console.ReadLine());
+
+
+                Console.WriteLine("Enter admin's password");
+
+                adminPassword = Convert.ToString(Console.ReadLine());
+
+                
+
+                isNumeric = int.TryParse(adminUserName, out number);
+
+
+                if (adminUserName.Length >=5 || adminPassword.Length >=5)
+                {
+                    this.passwordAndUserNameChecker.ChackingPasswrodAndUserNameIfItsEmpty(adminUserName, adminPassword);
+
+
+                    if (!isNumeric)
+                    {
+
+                        if (adminUserName == adminsData["userName"] && adminPassword == adminsData["password"])
+
+                            Console.WriteLine("proceeded! ");
+
+                        else
+                        {
+                            Console.WriteLine("type a correct password or userName! ");
+
+                            this.AdminLogIn();
+                        }
+                    }
+
+                    else
+                    {
+                        Console.WriteLine("you cannot use numbers while typing username");
+
+                        this.AdminLogIn();
+                    }
+
+                }
+
                 else
-                    throw new InvalidCastException("Data is wrong, try again!");
+                    throw new InvalidCastException("you connot type less than 5 symbolse!");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                AdminLogIn();
+                this.AdminLogIn();
             }
 
         }
 
-        public void AdminChooseAction()
-        {
-            Console.WriteLine("Choose any action");
-            string chooseAction = Convert.ToString(Console.ReadLine());
-            switch (chooseAction)
-            {
-                case "1":
-                    Message(adminsActions[chooseAction]);
-                    AdminsViewTheListOfUsers();
-                    break;
-
-                case "2":
-                    Message(adminsActions[chooseAction]);
-                    AddNewUser();
-                    break;
-
-                case "3":
-                    Message(adminsActions[chooseAction]);
-                    UserRemove();
-                    break;
-
-                case "4":
-                    Message(adminsActions[chooseAction]);
-                    break;
-
-                case "5":
-                    Message(adminsActions[chooseAction]);
-                    AdminsSignOutOfSystem();
-                    break;
-            }
-        }
-
-        public void AdminsViewTheListOfUsers()
+        protected void AdminChooseAction()
         {
 
-            foreach (var theListOfUsers in userDataBase)
-                Console.Write(theListOfUsers.Key + " " + theListOfUsers.Value);
+            nonReturnActions = new Dictionary<string, Action>
+            {
+                { "1", mainAdminActions.AdminsViewTheListOfUsers},
+
+                { "2",mainAdminActions.AddNewUser},
+
+                { "3", mainAdminActions.UserRemove}
+
+
+            };
+
+            returnActions = new Dictionary<string, Func<bool>>
+            {
+
+                { "5",AdminsSignOutOfSystem}
+            };
+
+            choose = Convert.ToString(Console.ReadLine());
+
+            if (nonReturnActions.ContainsKey(choose))
+                nonReturnActions[choose]?.Invoke();
+
+            else if (returnActions.ContainsKey(choose))
+                returnActions[choose]?.Invoke();
 
         }
 
-
-        public void AddNewUser()
-        {
-            Console.WriteLine("Checking whether the intitial capital is more than 100");
-            if (addMoney < 100)
-            {
-                Console.WriteLine("You cannot create a new user, top up your balance");
-                AddBalance();
-                AddNewUser();
-            }
-            else if (addMoney > 100)
-            {
-
-                Console.WriteLine("create a new user\n");
-
-                Console.WriteLine("type his userName:\n ");
-
-                userDataBase.Add("userName", newUserName = Convert.ToString(Console.ReadLine()));
-
-                Console.WriteLine("Enter an indentical password to your username:\n ");
-
-                password = Convert.ToString(Console.ReadLine());
-                try
-                {
-                    if (password == userDataBase["userName"])
-                    {
-                        userDataBase.Add(" password", password);
-
-                        Console.WriteLine("Now change password to another one\n");
-
-                        string passwordToChange = Convert.ToString(Console.ReadLine());
-
-                        userDataBase[" password"] = passwordToChange;
-
-                        Console.WriteLine("your password has been changed!\n");
-
-                    }
-                    else
-                        throw new InvalidCastException("you've typped unindentical password" +
-                            " to your username, pls check it again\n");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    AddNewUser();
-                }
-            }
-
-
-        }
-
-        private void UserRemove()
-        {
-            List<string> usersToRemove = new List<string>();
-
-            foreach (var pair in userDataBase)
-            {
-                if (pair.Equals(userDataBase["userName"]) && pair.Equals(userDataBase[" password"]))
-                    usersToRemove.Add(pair.Key);
-                    usersToRemove.Add(pair.Key);
-
-            }
-            foreach (var item in usersToRemove)
-            {
-                userDataBase.Remove(item[item.Length - 1].ToString());
-                Console.WriteLine("The user has been removed! ");    
-            }
-
-        }
-
-        public void UsersUnblock()
-        {
-
-        }
-
-        public bool AdminsSignOutOfSystem()
+        private bool AdminsSignOutOfSystem()
         {
             Console.WriteLine("Do you want to sign out of System?");
+
             string response = Convert.ToString(Console.ReadLine());
-            if (response == "y")
+
+            if (response.ToLower() == "y")
             {
-                return false;
+                return true;
             }
+
             else
             {
-                AdminsMenu();
-                AdminChooseAction();
+                this.AdminsMenu();
+
+                this.AdminChooseAction();
             }
-            return true;
+            return false;
         }
 
 
     }
+
+
 }
 
 
