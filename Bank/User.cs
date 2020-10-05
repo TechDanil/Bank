@@ -44,6 +44,7 @@ namespace Bank
 
         UserActions userActions;
 
+
         public void UserAccount()
         {
 
@@ -66,7 +67,7 @@ namespace Bank
                     Console.WriteLine("Bye :(");
                 }
 
-                else
+                else if(userAnswer.ToLower() == "n")
                 {
                     this.userActions.SignUpAccount();
 
@@ -88,6 +89,7 @@ namespace Bank
                     }
                 }
             }
+
            
             else if (isNumeric)
             {
@@ -120,6 +122,41 @@ namespace Bank
             Console.WriteLine("3. Add money to you wallet");
 
             Console.WriteLine("4. sign out of system");
+        }
+
+        public void SignUpAccount()
+        {
+            userActions = new UserActions();
+
+            Console.WriteLine("Enter userName");
+
+            userName = Convert.ToString(Console.ReadLine());
+
+            users.Add(userName);
+
+
+            isNumeric = int.TryParse(userName, out number);
+
+            if (!isNumeric)
+            {
+                Console.WriteLine("Enter your password:\n ");
+
+
+                password = Convert.ToString(Console.ReadLine());
+
+                userPasswords.Add(password);
+
+             this.userActions.onCheckPasswordAndUserName(userName, password);
+
+
+            }
+            else
+            {
+                Console.WriteLine("You cannot type digits !");
+
+                this.SignUpAccount();
+            }
+
         }
 
         public void UsersAction()

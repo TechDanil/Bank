@@ -7,41 +7,7 @@ namespace Bank
 
         User user;
 
-        public void SignUpAccount()
-        {
-
-            Console.WriteLine("Enter userName");
-
-            userName = Convert.ToString(Console.ReadLine());
-
-            users.Add(userName);
-
-
-            isNumeric = int.TryParse(userName, out number);
-
-            if (!isNumeric)
-            {
-                Console.WriteLine("Enter your password:\n ");
-
-
-                password = Convert.ToString(Console.ReadLine());
-
-                userPasswords.Add(password);
-
-                onCheckPasswordAndUserName(userName, password);
-
-
-            }
-            else
-            {
-                Console.WriteLine("You cannot type digits !");
-
-                this.SignUpAccount();
-            }
-
-        }
-
-        private void onCheckPasswordAndUserName(string userName, string password)
+        public void onCheckPasswordAndUserName(string userName, string password)
         {
             if (userName.Length >= 5 || password.Length >= 5)
             {
@@ -51,8 +17,10 @@ namespace Bank
             else if (String.IsNullOrEmpty(userName) || String.IsNullOrEmpty(password))
             {
                 Console.WriteLine("You cannot leave it empty!");
+                
                 this.SignUpAccount();
             }
+           
             else
             {
                 Console.WriteLine("your password or UserName cannot be less than 5 symbles in it!");
@@ -239,9 +207,9 @@ namespace Bank
 
             else
             {
-               user.UsersMenu();
+                user.UsersMenu();
 
-               user.UsersAction();
+                user.UsersAction();
             }
 
             return false;
