@@ -1,142 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Bank
 {
-    class UserActions : User
+   public class UserActions 
     {
 
-        User user;
+        static User user = new User();        
 
-        public void onCheckPasswordAndUserName(string userName, string password)
-        {
-            if (userName.Length >= 5 || password.Length >= 5)
-            {
-                Console.WriteLine("Congratualtions you created a new account! \n");
-            }
-
-            else if (String.IsNullOrEmpty(userName) || String.IsNullOrEmpty(password))
-            {
-                Console.WriteLine("You cannot leave it empty!");
-                
-                this.SignUpAccount();
-            }
-           
-            else
-            {
-                Console.WriteLine("your password or UserName cannot be less than 5 symbles in it!");
-
-                this.SignUpAccount();
-            }
-
-        }
-
-        public bool ChooseAction()
-        {
-            Console.WriteLine("\nDo you want to choose another action?:\n ");
-
-            choose = Convert.ToString(Console.ReadLine());
-
-            isNumeric = int.TryParse(choose, out number);
-
-            if (isNumeric)
-            {
-                Console.WriteLine("you cannot use digits here! Try again");
-
-                this.ChooseAction();
-            }
-
-            else if (String.IsNullOrEmpty(choose))
-            {
-                Console.WriteLine("you cannot leave this field empty! ");
-
-                this.ChooseAction();
-            }
-
-            return choose.ToLower() == "y";
-        }
-
-        public void LogInAnAccount()
-        {
-            int tries = 0;
-
-            string check;
-
-            Console.WriteLine("\nType your userName first and then password to log in");
-
-            check = Convert.ToString(Console.ReadLine());
-
-            try
-            {
-                if (check == userName)
-                {
-                    Console.WriteLine("The user has been found!\n");
-                }
-                else
-                    throw new InvalidCastException("Unfortunetly, the user has not been found! Try again\n");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                LogInAnAccount();
-            }
-
-            Console.WriteLine("Now enter your password\n");
-
-            bool isChecked = true;
-
-            while (isChecked)
-            {
-                check = Convert.ToString(Console.ReadLine());
-
-                tries++;
-
-                if (check == password)
-                {
-                    Console.WriteLine($"You've entered a correct password! and it's been your {tries} attempt\n");
-                    break;
-                }
-
-                else
-                {
-                    Console.WriteLine("Your password is wrong, try again\n ");
-
-                }
-
-                if (tries == 3)
-                {
-                    isChecked = false;
-                    Console.WriteLine("Unfurtenetly, you've been blocked\n");
-                }
-            }
-
-        }
+        public int money;
 
         public void AddBalance()
         {
 
             Console.WriteLine("Add that amount of money that you need\n");
 
-            int money = Convert.ToInt32(Console.ReadLine());
+            money = Convert.ToInt32(Console.ReadLine());
 
-            addMoney += money;
+            user.addMoney += money;
 
-            usersBalance.Add(addMoney);
+            user.usersBalance.Add(user.addMoney);
 
-            Console.WriteLine("Hello " + userName + " Now your balance is: " + usersBalance[usersBalance.Count - 1]);
+            Console.WriteLine("Hello " + user.userName + " Now your balance is: " + user.usersBalance[user.usersBalance.Count - 1]);
 
         }
 
         public void LookAtBalance()
         {
-            if (usersBalance == null)
+            if (user.usersBalance == null)
                 Console.WriteLine("There's no money yet");
 
-            else if (usersBalance.Equals(0))
+            else if (user.usersBalance.Equals(0))
                 Console.WriteLine("Your balance is empty");
 
 
             else
-                Console.WriteLine("Hello " + userName + " Your current balance is: " + usersBalance[usersBalance.Count - 1]);
+                Console.WriteLine("Hello " + user.userName + " Your current balance is: " + user.usersBalance[user.usersBalance.Count - 1]);
 
         }
 
@@ -147,13 +46,15 @@ namespace Bank
 
             int draw = Convert.ToInt32(Console.ReadLine());
 
-            if (draw.Equals(null))
-
+            if (draw == null)
+            {
                 Console.WriteLine("You don't have any money to withdraw yet");
+
+            }
 
             else
             {
-                if (draw > addMoney)
+                if (draw > user.addMoney)
 
                     Console.WriteLine("You cannot withdraw more than you've got");
 
@@ -163,30 +64,27 @@ namespace Bank
 
                 else
                 {
-                    draw = addMoney - draw;
+                    draw = user.addMoney - draw;
 
-                    usersBalance.Add(draw);
+                    user.usersBalance.Add(draw);
 
-                    Console.WriteLine("Hello, " + userName + " Now you balance is:  " + usersBalance[usersBalance.Count - 1]);
+                    Console.WriteLine("Hello, " + user.userName + " Now you balance is:  " + user.usersBalance[user.usersBalance.Count - 1]);
                 }
             }
         }
 
         public bool SignOutOfSystem()
         {
-            user = new User();
 
             Console.WriteLine("Do you want to sign out of System? Type y/n");
 
-            choose = Convert.ToString(Console.ReadLine());
+            user.choose = Convert.ToString(Console.ReadLine());
 
+            user.isNumeric = int.TryParse(user.choose, out user.number);
 
-
-            isNumeric = int.TryParse(choose, out number);
-
-            if (!isNumeric)
+            if (!user.isNumeric)
             {
-                if (choose.ToLower() == "y")
+                if (user.choose.ToLower() == "y")
                 {
                     return true;
 
@@ -200,7 +98,7 @@ namespace Bank
                 this.SignOutOfSystem();
             }
 
-            if (String.IsNullOrEmpty(choose))
+            if (String.IsNullOrEmpty(user.choose))
             {
                 Console.WriteLine("You cannot leave it empty");
             }
@@ -214,6 +112,9 @@ namespace Bank
 
             return false;
         }
+
+
+
 
     }
 }

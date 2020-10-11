@@ -1,16 +1,23 @@
 ﻿using System;
-using System.Reflection.Metadata;
 
 namespace Bank
 {
-    class Bank
+  public  class Bank
     {
+        static User user = new User();
+
+        static Admin admin = new Admin();
+
+
         static void Main(string[] args)
         {
-            User user = new User();
+           
+            Start();
+      
+        }
 
-            Admin admin = new Admin();
-
+        static void Start()
+        {
             Console.WriteLine("Choose what side you want to be: 1 - user, 2 - admin");
 
             int choose = Convert.ToInt32(Console.ReadLine());
@@ -25,12 +32,13 @@ namespace Bank
 
                 case 2:
 
-                   admin.AdminAccount();
+                    admin.AdminAccount();
 
                     break;
+
             }
-
-
         }
+
+
     }
 }

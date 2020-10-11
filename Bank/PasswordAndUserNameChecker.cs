@@ -2,7 +2,7 @@
 
 namespace Bank
 {
-    class PasswordAndUserNameChecker : Admin
+   public class PasswordAndUserNameChecker
     {
 
         public void ChackingPasswrodAndUserNameIfItsEmpty(string adminUserName, string adminPassword)
@@ -12,6 +12,8 @@ namespace Bank
                 Console.WriteLine("You cannot leave it empty");
             }
         }
+
+       
 
     }
 }

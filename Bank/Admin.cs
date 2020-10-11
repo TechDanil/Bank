@@ -3,27 +3,29 @@ using System.Collections.Generic;
 
 namespace Bank
 {
-    class Admin : MainAdminActions
+    public class Admin
     {
+        static PasswordAndUserNameChecker passwordAndUserNameChecker = new PasswordAndUserNameChecker();
 
-        private string adminUserName;
+        static MainAdminActions mainAdminActions = new MainAdminActions();
 
-        private string adminPassword;
-
-        protected void AdminsMenu()
+        Dictionary<string, Action> nonReturnAdminActions = new Dictionary<string, Action>
         {
-            Console.WriteLine("Select any feature down below");
+           {"1", mainAdminActions.AdminsViewTheListOfUsers },
+           
+            {"2", mainAdminActions.AddNewUser },
+           
+            {"3", mainAdminActions.UserRemove }
 
-            Console.WriteLine("1. look at the list of users");
+        };
 
-            Console.WriteLine("2. Add a new user");
+        Dictionary<string, Func<bool>> returnAdminActions = new Dictionary<string, Func<bool>>
+        {
+            {"5", mainAdminActions.AdminsSignOutOfSystem}
 
-            Console.WriteLine("3. delete the user");
+        };
 
-            Console.WriteLine("4. unblock the user");
-
-            Console.WriteLine("5. sign out of system");
-        }
+        static User user = new User();
 
         protected Dictionary<string, string> adminsData = new Dictionary<string, string>
         {
@@ -40,36 +42,47 @@ namespace Bank
             {"5", "to sign out of system" }
         };
 
+        private string adminUserName;
+
+        private string adminPassword;
 
 
-        PasswordAndUserNameChecker passwordAndUserNameChecker;
 
-        MainAdminActions mainAdminActions = new MainAdminActions();
-        
-        UserActions userActions;
+        public void AdminsMenu()
+        {
+            Console.WriteLine("Select any feature down below");
+
+            Console.WriteLine("1. look at the list of users");
+
+            Console.WriteLine("2. Add a new user");
+
+            Console.WriteLine("3. delete the user");
+
+            Console.WriteLine("4. unblock the user");
+
+            Console.WriteLine("5. sign out of system");
+        }
+
 
         public void AdminAccount()
         {
-            userActions = new UserActions();
-
             this.AdminLogIn();
 
-            agree = true;
+            user.agree = true;
 
-            while (agree)
+            while (user.agree)
             {
                 this.AdminsMenu();
 
-                this.AdminChooseAction();
+                this.AdminsActions();
 
-                agree =  userActions.ChooseAction();
+                user.agree = user.ChooseAction();
             }
 
         }
 
         protected void AdminLogIn()
         {
-            passwordAndUserNameChecker = new PasswordAndUserNameChecker();
 
             try
             {
@@ -82,17 +95,17 @@ namespace Bank
 
                 adminPassword = Convert.ToString(Console.ReadLine());
 
-                
-
-                isNumeric = int.TryParse(adminUserName, out number);
 
 
-                if (adminUserName.Length >=5 || adminPassword.Length >=5)
+                user.isNumeric = int.TryParse(adminUserName, out user.number);
+
+
+                if (adminUserName.Length >= user.lengthOfUserName || adminPassword.Length >= user.lengthOfPassword)
                 {
-                    this.passwordAndUserNameChecker.ChackingPasswrodAndUserNameIfItsEmpty(adminUserName, adminPassword);
+                    passwordAndUserNameChecker.ChackingPasswrodAndUserNameIfItsEmpty(adminUserName, adminPassword);
 
 
-                    if (!isNumeric)
+                    if (!user.isNumeric)
                     {
 
                         if (adminUserName == adminsData["userName"] && adminPassword == adminsData["password"])
@@ -127,55 +140,22 @@ namespace Bank
 
         }
 
-        protected void AdminChooseAction()
+        public void AdminsActions()
         {
+            user.choose = Convert.ToString(Console.ReadLine());
 
-            nonReturnActions = new Dictionary<string, Action>
+            if (nonReturnAdminActions.ContainsKey(user.choose))
             {
-                { "1", mainAdminActions.AdminsViewTheListOfUsers},
+                nonReturnAdminActions[user.choose]?.Invoke();
+            }
 
-                { "2",mainAdminActions.AddNewUser},
-
-                { "3", mainAdminActions.UserRemove}
-
-
-            };
-
-            returnActions = new Dictionary<string, Func<bool>>
+            else if (returnAdminActions.ContainsKey(user.choose))
             {
-
-                { "5",AdminsSignOutOfSystem}
-            };
-
-            choose = Convert.ToString(Console.ReadLine());
-
-            if (nonReturnActions.ContainsKey(choose))
-                nonReturnActions[choose]?.Invoke();
-
-            else if (returnActions.ContainsKey(choose))
-                returnActions[choose]?.Invoke();
+                returnAdminActions[user.choose]?.Invoke();
+            }
 
         }
 
-        private bool AdminsSignOutOfSystem()
-        {
-            Console.WriteLine("Do you want to sign out of System?");
-
-            string response = Convert.ToString(Console.ReadLine());
-
-            if (response.ToLower() == "y")
-            {
-                return true;
-            }
-
-            else
-            {
-                this.AdminsMenu();
-
-                this.AdminChooseAction();
-            }
-            return false;
-        }
 
 
     }
